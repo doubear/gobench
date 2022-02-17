@@ -91,13 +91,13 @@ func integrate(cycles int) float64 {
 }
 
 func Monte_carlo() {
-	fmt.Printf("====start monte_carlo====")
+	fmt.Printf("====start monte_carlo====\n")
 	cycles := 16777216
 	t1 := time.Now().UnixNano()
 	x := integrate(cycles)
 	t2 := time.Now().UnixNano()
 	fmt.Println(x, t2-t1)
-	fmt.Printf("==== monte_carlo end ====")
+	fmt.Printf("==== monte_carlo end ====\n")
 }
 
 //Lu
