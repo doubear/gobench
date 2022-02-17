@@ -24,9 +24,9 @@ func sexit() {
 
 var reminder string = `1 provide mem/cpu/disk monitor 
 2 provide fft/mont_carlo test
-3 db saving support
+3 db saving support (future)
 4 monitorlog saving support
-5 web access support
+5 web access support (future)
 ========================================
 args such as getinfo/lscpu/montcarlo etc
 ========================================
