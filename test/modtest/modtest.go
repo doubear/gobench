@@ -7,6 +7,7 @@ import (
 	"math"
 	"math/cmplx"
 	"math/rand"
+	"sync"
 	"time"
 
 	"github.com/shirou/gopsutil/cpu"
@@ -53,7 +54,7 @@ func testfft(data []complex128) {
 
 func InvFft() {
 	ND := 6192
-	fmt.Printf("====start fft====\n")
+	//fmt.Printf("====start fft====\n")
 	t1 := time.Now().UnixNano()
 	data1 := make([]complex128, ND)
 	data2 := make([]complex128, ND)
@@ -71,26 +72,21 @@ func InvFft() {
 		}
 	}
 	t2 := time.Now().UnixNano()
-	fmt.Println(t2 - t1)
-	fmt.Printf("==== fft end ====\n")
+	//fmt.Println(t2 - t1)
+	fmt.Printf("====start fft====\n %d \n==== fft end ====\n", t2-t1)
 }
-func Multi_fft() { //the numbers of threads is the same with cores
+func Multi_fft() { //the number of threads is the same with cores number
 	n, _ := cpu.Counts(true)
 	fmt.Printf("we will run %d threads\n", n)
-	k := n
-	ch := make(chan int)
-	go func() {
-		for i := 0; i < n; i++ {
+	var wg sync.WaitGroup
+	wg.Add(n)
+	for i := 0; i < n; i++ {
+		go func() {
 			InvFft()
-			ch <- i
-		}
-	}()
-	for range ch {
-		k--
-		if k == 0 {
-			close(ch)
-		}
+			wg.Done()
+		}()
 	}
+	wg.Wait()
 }
 
 //Monte_carlo
@@ -111,31 +107,28 @@ func integrate(cycles int) float64 {
 }
 
 func Monte_carlo() {
-	fmt.Printf("====start monte_carlo====\n")
+	//fmt.Printf("====start monte_carlo====\n")
 	cycles := 16777216
 	t1 := time.Now().UnixNano()
 	x := integrate(cycles)
 	t2 := time.Now().UnixNano()
-	fmt.Println(x, t2-t1)
-	fmt.Printf("==== monte_carlo end ====\n")
+	//fmt.Println(x, t2-t1)
+	fmt.Printf("====start monte_carlo====\n %f %d\n==== monte_carlo end ====\n", x, t2-t1)
+
 }
 func Mult_mont() { //support multi threada running
 	n, _ := cpu.Counts(true)
+	var wg sync.WaitGroup
+	wg.Add(n)
 	fmt.Printf("we will run %d threads\n", n)
-	k := n
-	ch := make(chan int)
-	go func() {
-		for i := 0; i < n; i++ {
+	for i := 0; i < n; i++ {
+		go func() {
 			Monte_carlo()
-			ch <- i
-		}
-	}()
-	for range ch {
-		k--
-		if k == 0 {
-			close(ch)
-		}
+			wg.Done()
+		}()
 	}
+
+	wg.Wait()
 }
 
 //Lu
