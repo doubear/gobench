@@ -50,14 +50,18 @@ func benchchoose(args string) {
 	fmt.Printf("input test:fft/montcarlo\n")
 	switch args {
 	case "fft":
-		modtest.InvFft()
+		//modtest.InvFft()
+		modtest.Multi_fft()
 		fmt.Printf("continue input test:\n")
 	case "montcarlo":
-		modtest.Monte_carlo()
+		//modtest.Monte_carlo()
+		modtest.Mult_mont()
 		fmt.Printf("continue input test:\n")
 	case "all":
-		modtest.InvFft()
-		modtest.Monte_carlo()
+		//	modtest.InvFft()
+		//	modtest.Monte_carlo()
+		modtest.Multi_fft()
+		modtest.Mult_mont()
 		fmt.Printf("continue input test:\n")
 
 	case "back":

@@ -8,6 +8,8 @@ import (
 	"math/cmplx"
 	"math/rand"
 	"time"
+
+	"github.com/shirou/gopsutil/cpu"
 )
 
 //FFT
@@ -72,6 +74,24 @@ func InvFft() {
 	fmt.Println(t2 - t1)
 	fmt.Printf("==== fft end ====\n")
 }
+func Multi_fft() { //the numbers of threads is the same with cores
+	n, _ := cpu.Counts(true)
+	fmt.Printf("we will run %d threads\n", n)
+	k := n
+	ch := make(chan int)
+	go func() {
+		for i := 0; i < n; i++ {
+			InvFft()
+			ch <- i
+		}
+	}()
+	for range ch {
+		k--
+		if k == 0 {
+			close(ch)
+		}
+	}
+}
 
 //Monte_carlo
 func integrate(cycles int) float64 {
@@ -98,6 +118,24 @@ func Monte_carlo() {
 	t2 := time.Now().UnixNano()
 	fmt.Println(x, t2-t1)
 	fmt.Printf("==== monte_carlo end ====\n")
+}
+func Mult_mont() { //support multi threada running
+	n, _ := cpu.Counts(true)
+	fmt.Printf("we will run %d threads\n", n)
+	k := n
+	ch := make(chan int)
+	go func() {
+		for i := 0; i < n; i++ {
+			Monte_carlo()
+			ch <- i
+		}
+	}()
+	for range ch {
+		k--
+		if k == 0 {
+			close(ch)
+		}
+	}
 }
 
 //Lu
