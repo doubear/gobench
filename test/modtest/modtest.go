@@ -53,7 +53,7 @@ func testfft(data []complex128) {
 }
 
 func InvFft() {
-	ND := 6192
+	ND := 65536 //size 64KB
 	//fmt.Printf("====start fft====\n")
 	t1 := time.Now().UnixNano()
 	data1 := make([]complex128, ND)
@@ -116,7 +116,7 @@ func Monte_carlo() {
 	fmt.Printf("====start monte_carlo====\n %f %d\n==== monte_carlo end ====\n", x, t2-t1)
 
 }
-func Mult_mont() { //support multi threada running
+func Mult_mont() { //support multi threads running
 	n, _ := cpu.Counts(true)
 	var wg sync.WaitGroup
 	wg.Add(n)
@@ -132,14 +132,109 @@ func Mult_mont() { //support multi threada running
 }
 
 //Lu
-func Lu() {
+var R = rand.New(rand.NewSource(time.Now().Unix()))
 
+func randR() (v float64) {
+	return 0 + R.Float64()*1
+}
+func randommatrix(N int) [][]float64 {
+	A := make([][]float64, N)
+	for i := range A {
+		A[i] = make([]float64, N)
+	}
+	for k := 0; k < N; k++ {
+		for m := 0; m < N; m++ {
+			A[k][m] = randR()
+		}
+	}
+	return A
 }
 
+func copymatrix(lu, A [][]float64) {
+	M := len(A)
+	N := len(A)
+	remainder := N * 3
+	for i := 0; i < M; i++ {
+		Bi := lu[i]
+		Ai := A[i]
+		for j := 0; j < N; j++ {
+			Bi[j] = Ai[j]
+		}
+		for j := remainder; j < N; j += 4 {
+			Bi[j] = Ai[j]
+			Bi[j+1] = Ai[j+1]
+			Bi[j+2] = Ai[j+2]
+			Bi[j+3] = Ai[j+3]
+		}
+	}
+}
+func factor(A [][]float64, pivot []int) {
+	M := len(A)
+	N := len(A)
+	min := func(M, N int) int {
+		if M > N {
+			return N
+		}
+		return M
+	}(M, N)
+	for j := 0; j < min; j++ {
+		jp := j
+		t := math.Abs(A[j][j])
+		for i := 0; i < M; i++ {
+			ab := math.Abs(A[i][j])
+			if ab > t {
+				jp = i
+				t = ab
+			}
+		}
+		pivot[j] = jp
+		if jp != j {
+			A[j], A[jp] = A[jp], A[j]
+		}
+		if j < M-1 {
+			recp := 1.0 / A[j][j]
+			for k := j + 1; k < M; k++ {
+				A[k][j] *= recp
+			}
+		}
+		if j < min-1 {
+			for ii := j + 1; ii < M; ii++ {
+				Aii := A[ii]
+				Aj := A[j]
+				AiAiJ := Aii[j]
+				for jj := j + 1; jj < N; jj++ {
+					Aii[jj] -= AiAiJ * Aj[jj]
+				}
+			}
+		}
+	}
+}
+
+func measureLU(N int) {
+	A := randommatrix(N)
+	lu := make([][]float64, N)
+	pivot := make([]int, N)
+	for i := range lu {
+		lu[i] = make([]float64, N)
+	}
+	copymatrix(lu, A)
+	t1 := time.Now().UnixNano()
+	factor(lu, pivot)
+	t2 := time.Now().UnixNano()
+	fmt.Printf("====start lu====\n %d \n==== lu end ====\n", t2-t1)
+}
+
+func Lu() {
+	N := 1000
+	measureLU(N)
+}
+
+//sor
 func Sor() {
 
 }
 
+//sparse
 func Sparse() {
 
 }
