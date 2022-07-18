@@ -57,6 +57,9 @@ func benchchoose(args string) {
 		//modtest.Monte_carlo()
 		modtest.Mult_mont()
 		fmt.Printf("continue input test:\n")
+	case "lu":
+		modtest.Lu()
+		fmt.Printf("continue input test:\n")
 	case "all":
 		//	modtest.InvFft()
 		//	modtest.Monte_carlo()
