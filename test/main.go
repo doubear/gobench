@@ -24,7 +24,7 @@ func sexit() {
 }
 
 var reminder string = `1 provide mem/cpu/disk monitor 
-2 provide fft/mont_carlo test
+2 provide fft/mont_carlo/lu/sor test
 3 db saving support
 4 monitorlog saving support
 5 web access support
@@ -37,17 +37,17 @@ args such as getinfo/lscpu/benchtest(fft/montcarlo) etc
 ＜  ･        \
   \＿＿／u  _u  )
             Ｕ Ｕ
-doubear in 2022 version 0.1
+doubear in 2022 version 0.1.5
 
-input:getinfo/lscpu/bench(fft/montcarlo) etc`
+input:getinfo/lscpu/bench(fft/montcarlo/lu/sor) etc`
 
 var help string = `========================================
-args such as getinfo/lscpu/bench(fft/montcarlo) etc
+args such as getinfo/lscpu/bench(fft/montcarlo/lu/sor) etc
 ========================================
 input:getinfo/lscpu/bench etc`
 
 func benchchoose(args string) {
-	fmt.Printf("input test:fft/montcarlo\n")
+	fmt.Printf("input test:fft/montcarlo/lu/sor\n")
 	switch args {
 	case "fft":
 		//modtest.InvFft()
@@ -59,6 +59,9 @@ func benchchoose(args string) {
 		fmt.Printf("continue input test:\n")
 	case "lu":
 		modtest.Lu()
+		fmt.Printf("continue input test:\n")
+	case "sor":
+		modtest.Sor()
 		fmt.Printf("continue input test:\n")
 	case "all":
 		//	modtest.InvFft()

@@ -230,8 +230,40 @@ func Lu() {
 }
 
 //sor
+func measureSOR(omega float64, G [][]float64, num_iterations int) {
+	M := len(G)
+	N := len(G)
+	omega_over_four := omega * 0.25
+	one_minus_omega := 1.0 - omega
+	Gi := make([]float64, N)
+	Gi_sum := 0.0
+	Mm1 := M - 1
+	Nm1 := N - 1
+	for p := 0; p < num_iterations; p++ {
+		for i := 1; i < Mm1; i++ {
+			Gim1 := G[i-1]
+			Gip1 := G[i-1]
+			for j := 1; j < Nm1; j++ {
+				Gi[j] = omega_over_four*(Gim1[j]+Gip1[j]+Gi[j-1]+Gi[j+1]) + one_minus_omega*Gi[j]
+			}
+		}
+	}
+	for k := 0; k < len(Gi); k++ {
+		Gi_sum += Gi[k]
+	}
+}
 func Sor() {
-
+	N := 1000
+	G := make([][]float64, N)
+	for i := range G {
+		G[i] = make([]float64, N)
+	}
+	G = randommatrix(N)
+	cycles := 256
+	t1 := time.Now().UnixNano()
+	measureSOR(1.25, G, cycles)
+	t2 := time.Now().UnixNano()
+	fmt.Printf("====start sor====\n %d \n==== sor end ====\n", t2-t1)
 }
 
 //sparse
