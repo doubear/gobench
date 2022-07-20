@@ -53,7 +53,7 @@ func testfft(data []complex128) {
 }
 
 func InvFft() {
-	ND := 65536 //size 64KB
+	ND := 4096 //size 64KB
 	//fmt.Printf("====start fft====\n")
 	t1 := time.Now().UnixNano()
 	data1 := make([]complex128, ND)
@@ -267,6 +267,55 @@ func Sor() {
 }
 
 //sparse
-func Sparse() {
+func matmult(y, val, x []float64, row, col []int, NUM_ITERATIONS, call_count int) {
+	//total := 0.0
+	M := len(row) - 1
+	for reps := 0; reps < NUM_ITERATIONS; reps++ {
+		for r := 0; r < M; r++ {
+			sum := 0.0
+			rowR := row[r]
+			rowRp1 := row[r+1]
+			for i := rowR; i < rowRp1; i++ {
+				sum += x[col[i]] * val[i]
+				y[r] = sum
+			}
+		}
+	}
+}
 
+func Sparse() {
+	//N := 1000
+	nz := 1000000
+	N := 100000
+	x := make([]float64, N)
+	y := make([]float64, N)
+	for i := range x {
+		x[i] = randR()
+	}
+	nr := nz / N
+	anz := nr * N
+	val := make([]float64, anz)
+	for i := range val {
+		val[i] = randR()
+	}
+	col := make([]int, anz)
+	row := make([]int, N+1)
+	row[0] = 0
+	for r := 0; r < N; r++ {
+		rowr := row[r]
+		row[r+1] = rowr + nr
+		step := r / nr
+		if step < 1 {
+			step = 1
+		}
+		for i := 0; i < nr; i++ {
+			col[rowr+i] = i * step
+		}
+	}
+	cycles := 512
+	count := 2
+	t1 := time.Now().UnixNano()
+	matmult(y, val, x, row, col, cycles, count)
+	t2 := time.Now().UnixNano()
+	fmt.Printf("====start sparse====\n %d \n==== sparse end ====\n", t2-t1)
 }
